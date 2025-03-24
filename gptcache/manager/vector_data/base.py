@@ -4,11 +4,14 @@ from typing import List, Optional, Union
 
 import numpy as np
 
+from model.metadata_def import CacheMetadata
+
 
 @dataclass
 class VectorData:
     id: int
     data: np.ndarray
+    metadata: Optional[List[CacheMetadata]]
 
 
 class VectorBase(ABC):

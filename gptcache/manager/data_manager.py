@@ -20,6 +20,7 @@ from gptcache.manager.scalar_data.base import (
 from gptcache.manager.vector_data.base import VectorBase, VectorData
 from gptcache.utils.error import CacheError, ParamError
 from gptcache.utils.log import gptcache_log
+from model.model_def import CacheDocument
 
 
 class DataManager(metaclass=ABCMeta):
@@ -320,10 +321,17 @@ class SSDataManager(DataManager):
             else:
                 ans = answers[i]
 
+            str_ans = ans
+            metadata = None
+            if isinstance(ans, CacheDocument):
+                metadata = ans.metadata
+                str_ans = ans.content
+
             cache_datas.append(
                 CacheData(
                     question=self._process_question_data(questions[i]),
-                    answers=ans,
+                    answers=str_ans,
+                    metadata=metadata,
                     embedding_data=embedding_data.astype("float32"),
                     session_id=session_ids[i],
                 )
@@ -331,7 +339,7 @@ class SSDataManager(DataManager):
         ids = self.s.batch_insert(cache_datas)
         self.v.mul_add(
             [
-                VectorData(id=ids[i], data=embedding_data)
+                VectorData(id=ids[i], data=embedding_data, metadata=cache_datas[i].metadata)
                 for i, embedding_data in enumerate(embedding_datas)
             ]
         )

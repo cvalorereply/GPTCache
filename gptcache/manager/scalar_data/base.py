@@ -6,6 +6,9 @@ from typing import Optional, Any, List, Union, Dict
 
 import numpy as np
 
+from model.metadata_def import CacheMetadata
+from model.model_def import CacheDocument
+
 
 class DataType(IntEnum):
     STR = 0
@@ -65,6 +68,7 @@ class CacheData:
 
     question: Union[str, Question]
     answers: List[Answer]
+    metadata: Optional[List[CacheMetadata]]
     embedding_data: Optional[np.ndarray] = None
     session_id: Optional[str] = None
     create_on: Optional[datetime] = None
@@ -74,6 +78,7 @@ class CacheData:
         self,
         question,
         answers,
+        metadata=None,
         embedding_data=None,
         session_id=None,
         create_on=None,
@@ -81,8 +86,12 @@ class CacheData:
     ):
         self.question = question
         self.answers = []
+        self.metadata = metadata
         if isinstance(answers, (str, Answer)):
             answers = [answers]
+        elif isinstance(answers, CacheDocument):
+            self.metadata = answers.metadata
+            answers = [answers.content]
         for data in answers:
             if isinstance(data, (list, tuple)):
                 self.answers.append(Answer(*data))

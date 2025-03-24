@@ -1,6 +1,7 @@
 from typing import List
 
 import numpy as np
+from chromadb import Metadata
 
 from gptcache.manager.vector_data.base import VectorBase, VectorData
 from gptcache.utils import import_chromadb, import_torch
@@ -38,17 +39,16 @@ class Chromadb(VectorBase):
             self._client_settings = client_settings
         else:
             self._client_settings = chromadb.config.Settings()
-            if persist_directory is not None:
-                self._client_settings = chromadb.config.Settings(
-                    chroma_db_impl="duckdb+parquet", persist_directory=persist_directory
-                )
-        self._client = chromadb.Client(self._client_settings)
+        if persist_directory is not None:
+            self._client = chromadb.PersistentClient(path=persist_directory, settings=self._client_settings)
+        else:
+            self._client = chromadb.Client(self._client_settings)
         self._persist_directory = persist_directory
         self._collection = self._client.get_or_create_collection(name=collection_name)
 
     def mul_add(self, datas: List[VectorData]):
-        data_array, id_array = map(list, zip(*((data.data.tolist(), str(data.id)) for data in datas)))
-        self._collection.add(embeddings=data_array, ids=id_array)
+        data_array, id_array, metadata = map(list, zip(*((data.data.tolist(), str(data.id), {meta.name: meta.value for meta in (data.metadata or [])}) for data in datas)))
+        self._collection.add(embeddings=data_array, ids=id_array, metadatas=metadata)
 
     def search(self, data, top_k: int = -1):
         if self._collection.count() == 0:
