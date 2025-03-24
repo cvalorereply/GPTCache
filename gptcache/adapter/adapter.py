@@ -7,6 +7,7 @@ from gptcache.processor.post import temperature_softmax
 from gptcache.utils.error import NotInitError
 from gptcache.utils.log import gptcache_log
 from gptcache.utils.time import time_cal
+from model.model_def import CacheDocument
 
 
 def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwargs):
@@ -65,9 +66,15 @@ def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwarg
     if isinstance(pre_embedding_res, tuple):
         pre_store_data = pre_embedding_res[0]
         pre_embedding_data = pre_embedding_res[1]
+        pre_embedding_metadata = []
+    elif isinstance(pre_embedding_res, CacheDocument):
+        pre_store_data = pre_embedding_res.content
+        pre_embedding_data = pre_embedding_res.content
+        pre_embedding_metadata = pre_embedding_res.metadata
     else:
         pre_store_data = pre_embedding_res
         pre_embedding_data = pre_embedding_res
+        pre_embedding_metadata = []
 
     if chat_cache.config.input_summary_len is not None:
         pre_embedding_data = _summarize_input(
@@ -91,6 +98,7 @@ def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwarg
             top_k=kwargs.pop("top_k", 5)
             if (user_temperature and not user_top_k)
             else kwargs.pop("top_k", -1),
+            metadata=pre_embedding_metadata,
         )
         if search_data_list is None:
             search_data_list = []

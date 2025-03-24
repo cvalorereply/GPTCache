@@ -110,7 +110,7 @@ class RedisVectorStore(VectorBase):
 
         pipe.execute()
 
-    def search(self, data: np.ndarray, top_k: int = -1):
+    def search(self, data: np.ndarray, top_k: int = -1, metadata=None):
         query = (
             Query(
                 f"*=>[KNN {top_k if top_k > 0 else self.top_k} @vector $vec as score]"

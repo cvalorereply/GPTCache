@@ -169,7 +169,7 @@ class Milvus(VectorBase):
         entities = [id_array, np_data]
         self.col.insert(entities)
 
-    def search(self, data: np.ndarray, top_k: int = -1):
+    def search(self, data: np.ndarray, top_k: int = -1, metadata=None):
         if top_k == -1:
             top_k = self.top_k
         search_result = self.col.search(

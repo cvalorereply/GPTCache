@@ -22,7 +22,7 @@ class VectorBase(ABC):
         pass
 
     @abstractmethod
-    def search(self, data: np.ndarray, top_k: int):
+    def search(self, data: np.ndarray, top_k: int, metadata: Optional[List[CacheMetadata]]):
         pass
 
     @abstractmethod

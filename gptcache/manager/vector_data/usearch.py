@@ -64,7 +64,7 @@ class USearch(VectorBase):
         ids = np.array(id_array, dtype=np.longlong)
         self._index.add(ids, np_data)
 
-    def search(self, data: np.ndarray, top_k: int = -1):
+    def search(self, data: np.ndarray, top_k: int = -1, metadata=None):
         if top_k == -1:
             top_k = self._top_k
         np_data = np.array(data).astype("float32").reshape(1, -1)

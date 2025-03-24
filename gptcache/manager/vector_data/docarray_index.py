@@ -48,7 +48,7 @@ class DocArrayIndex(VectorBase):
         self._index.index(docs)
 
     def search(
-        self, data: np.ndarray, top_k: int = -1
+        self, data: np.ndarray, top_k: int = -1, metadata=None
     ) -> Optional[List[Tuple[float, int]]]:
         """
         Search for the nearest vector data elements in the index.

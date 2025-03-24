@@ -135,7 +135,7 @@ class PGVector(VectorBase):
             session.bulk_insert_mappings(self._store, entities)
             session.commit()
 
-    def search(self, data: np.ndarray, top_k: int = -1):
+    def search(self, data: np.ndarray, top_k: int = -1, metadata=None):
         if top_k == -1:
             top_k = self.top_k
 

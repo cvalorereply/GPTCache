@@ -42,6 +42,7 @@ from gptcache.similarity_evaluation import (
     SbertCrossencoderEvaluation
 )
 from gptcache.utils import import_ruamel
+from model.model_def import CacheDocument
 
 
 def _cache_data_converter(cache_data):
@@ -102,12 +103,12 @@ def put(prompt: str, data: Any, **kwargs) -> None:
     )
 
 
-def get(prompt: str, **kwargs) -> Any:
+def get(question: CacheDocument, **kwargs) -> Any:
     """get api, get the cache data according to the `prompt`
     Please make sure that the `pre_embedding_func` param is `get_prompt` when initializing the cache
 
-    :param prompt: the cache data key, usually question text
-    :type prompt: str
+    :param question: the cache data key, usually question text + metadata
+    :type question: CacheDocument
     :param kwargs: list of user-defined parameters
     :type kwargs: Dict
 
@@ -125,7 +126,7 @@ def get(prompt: str, **kwargs) -> Any:
         _llm_handle_none,
         _cache_data_converter,
         _update_cache_callback_none,
-        prompt=prompt,
+        prompt=question,
         **kwargs,
     )
     return res

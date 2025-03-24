@@ -97,7 +97,7 @@ class Weaviate(VectorBase):
                     data_object=properties, class_name=self.class_name, vector=data.data
                 )
 
-    def search(self, data: np.ndarray, top_k: int = -1):
+    def search(self, data: np.ndarray, top_k: int = -1, metadata=None):
         if top_k == -1:
             top_k = self.top_k
 
