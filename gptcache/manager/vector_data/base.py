@@ -4,7 +4,7 @@ from typing import List, Optional, Union
 
 import numpy as np
 
-from model.metadata_def import CacheMetadata
+from gptcache.manager.scalar_data.base import CacheMetadata
 
 
 @dataclass

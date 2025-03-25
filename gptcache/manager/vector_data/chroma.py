@@ -1,12 +1,9 @@
 from typing import List, Optional
 
 import numpy as np
-from chromadb import Metadata
-from chromadb.types import LogicalOperator
 
 from gptcache.manager.vector_data.base import VectorBase, VectorData
 from gptcache.utils import import_chromadb, import_torch
-from model.metadata_def import CacheMetadata
 
 import_torch()
 import_chromadb()
@@ -49,7 +46,7 @@ class Chromadb(VectorBase):
         self._collection = self._client.get_or_create_collection(name=collection_name)
 
     def mul_add(self, datas: List[VectorData]):
-        data_array, id_array, metadata = map(list, zip(*((data.data.tolist(), str(data.id), {meta.name: meta.value for meta in (data.metadata or [])}) for data in datas)))
+        data_array, id_array, metadata = map(list, zip(*((data.data.tolist(), str(data.id), {meta["name"]: meta["value"] for meta in (data.metadata or [])}) for data in datas)))
         self._collection.add(embeddings=data_array, ids=id_array, metadatas=metadata)
 
     def search(self, data, top_k: int = -1, metadata=None):
@@ -60,7 +57,7 @@ class Chromadb(VectorBase):
         results = self._collection.query(
             query_embeddings=[data.tolist()],
             n_results=top_k,
-            where={"$and": [{m.name: {"$eq": m.value}} for m in metadata]} if metadata is not None and len(metadata) > 0 else None,
+            where={"$and": [{m["name"]: {"$eq": m["value"]}} for m in metadata]} if metadata is not None and len(metadata) > 0 else None,
             include=["distances"],
         )
         return list(zip(results["distances"][0], [int(x) for x in results["ids"][0]]))

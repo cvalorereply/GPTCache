@@ -3,11 +3,11 @@ import time
 import numpy as np
 
 from gptcache import cache
+from gptcache.manager.scalar_data.base import CacheDocument
 from gptcache.processor.post import temperature_softmax
 from gptcache.utils.error import NotInitError
 from gptcache.utils.log import gptcache_log
 from gptcache.utils.time import time_cal
-from model.model_def import CacheDocument
 
 
 def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwargs):

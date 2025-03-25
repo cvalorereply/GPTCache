@@ -16,11 +16,11 @@ from gptcache.manager.scalar_data.base import (
     DataType,
     Answer,
     Question,
+    CacheDocument,
 )
 from gptcache.manager.vector_data.base import VectorBase, VectorData
 from gptcache.utils.error import CacheError, ParamError
 from gptcache.utils.log import gptcache_log
-from model.model_def import CacheDocument
 
 
 class DataManager(metaclass=ABCMeta):

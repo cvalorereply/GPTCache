@@ -1,5 +1,5 @@
 # pylint: disable=wrong-import-position
-from typing import Any, Optional, Callable
+from typing import Any, Optional, Callable, Union
 
 import gptcache.processor.post
 import gptcache.processor.pre
@@ -22,6 +22,7 @@ from gptcache.embedding import (
 from gptcache.embedding.base import BaseEmbedding
 from gptcache.manager import manager_factory
 from gptcache.manager.data_manager import DataManager
+from gptcache.manager.scalar_data.base import CacheDocument
 from gptcache.processor.context import (
     SummarizationContextProcess,
     SelectiveContextProcess,
@@ -42,7 +43,6 @@ from gptcache.similarity_evaluation import (
     SbertCrossencoderEvaluation
 )
 from gptcache.utils import import_ruamel
-from model.model_def import CacheDocument
 
 
 def _cache_data_converter(cache_data):
@@ -91,6 +91,11 @@ def put(prompt: str, data: Any, **kwargs) -> None:
     """
 
     def llm_handle(*llm_args, **llm_kwargs):  # pylint: disable=W0613
+        if isinstance(data, dict):
+            if "content" in data and "metadata" in data:
+                return CacheDocument(content=data["content"], metadata=data["metadata"])
+            elif "content" in data:
+                return CacheDocument(content=data["content"], metadata=[])
         return data
 
     adapt(
@@ -103,7 +108,7 @@ def put(prompt: str, data: Any, **kwargs) -> None:
     )
 
 
-def get(question: CacheDocument, **kwargs) -> Any:
+def get(question: Union[str, dict], **kwargs) -> Any:
     """get api, get the cache data according to the `prompt`
     Please make sure that the `pre_embedding_func` param is `get_prompt` when initializing the cache
 
@@ -122,11 +127,21 @@ def get(question: CacheDocument, **kwargs) -> Any:
             put("hello", "foo")
             print(get("hello"))
     """
+
+    prompt = None
+    if isinstance(question, dict):
+        if "content" in question and "metadata" in question:
+            prompt = CacheDocument(content=question["content"], metadata=question["metadata"])
+        elif "content" in question:
+            prompt = CacheDocument(content=question["content"], metadata=[])
+    else:
+        prompt = str(question)
+
     res = adapt(
         _llm_handle_none,
         _cache_data_converter,
         _update_cache_callback_none,
-        prompt=question,
+        prompt=prompt,
         **kwargs,
     )
     return res

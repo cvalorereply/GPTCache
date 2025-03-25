@@ -6,14 +6,23 @@ from typing import Optional, Any, List, Union, Dict
 
 import numpy as np
 
-from model.metadata_def import CacheMetadata
-from model.model_def import CacheDocument
-
 
 class DataType(IntEnum):
     STR = 0
     IMAGE_BASE64 = 1
     IMAGE_URL = 2
+
+
+@dataclass
+class CacheMetadata:
+    name: str
+    value: str
+
+
+@dataclass
+class CacheDocument:
+    content: str
+    metadata: Optional[List[CacheMetadata]]
 
 
 @dataclass
