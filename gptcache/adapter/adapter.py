@@ -162,6 +162,7 @@ def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwarg
                     "search_result": search_data,
                     "cache_data": cache_data,
                     "embedding": cache_data.embedding_data,
+                    "create_on": cache_data.create_on,
                 }
             rank = time_cal(
                 chat_cache.similarity_evaluation.evaluation,
