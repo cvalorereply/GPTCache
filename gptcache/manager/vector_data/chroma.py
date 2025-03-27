@@ -58,9 +58,9 @@ class Chromadb(VectorBase):
             query_embeddings=[data.tolist()],
             n_results=top_k,
             where={"$and": [{m["name"]: {"$eq": m["value"]}} for m in metadata]} if metadata is not None and len(metadata) > 0 else None,
-            include=["distances"],
+            include=["distances", "metadatas"],
         )
-        return list(zip(results["distances"][0], [int(x) for x in results["ids"][0]]))
+        return list(zip(results["distances"][0], [int(x) for x in results["ids"][0]], [m for m in results["metadatas"][0]]))
 
     def delete(self, ids):
         self._collection.delete([str(x) for x in ids])

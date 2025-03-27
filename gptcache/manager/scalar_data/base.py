@@ -78,6 +78,7 @@ class CacheData:
     question: Union[str, Question]
     answers: List[Answer]
     metadata: Optional[List[CacheMetadata]]
+    cache_id: Optional[int] = None
     embedding_data: Optional[np.ndarray] = None
     session_id: Optional[str] = None
     create_on: Optional[datetime] = None

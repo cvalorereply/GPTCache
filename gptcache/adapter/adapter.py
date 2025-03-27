@@ -126,6 +126,8 @@ def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwarg
             if cache_data is None:
                 continue
 
+            search_data = search_data[:2]
+
             # cache consistency check
             if chat_cache.config.data_check:
                 is_healthy = cache_health_check(
@@ -194,13 +196,13 @@ def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwarg
             def post_process():
                 if chat_cache.post_process_messages_func is temperature_softmax:
                     return_message = chat_cache.post_process_messages_func(
-                        messages=[t[1] for t in cache_answers],
+                        messages=[{"content": t[1], "metadata": t[3].metadata, "cache_id": t[3].cache_id} for t in cache_answers],
                         scores=[t[0] for t in cache_answers],
                         temperature=temperature,
                     )
                 else:
                     return_message = chat_cache.post_process_messages_func(
-                        [t[1] for t in cache_answers]
+                        [{"content": t[1], "metadata": t[3].metadata} for t in cache_answers]
                     )
                 return return_message
 
@@ -210,7 +212,7 @@ def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwarg
                 report_func=chat_cache.report.post,
             )()
             chat_cache.report.hint_cache()
-            cache_whole_data = answers_dict.get(str(return_message))
+            cache_whole_data = answers_dict.get(str(return_message["content"]))
             if session and cache_whole_data:
                 chat_cache.data_manager.add_session(
                     cache_whole_data[2], session.name, pre_embedding_data

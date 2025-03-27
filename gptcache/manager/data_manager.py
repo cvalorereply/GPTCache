@@ -16,7 +16,7 @@ from gptcache.manager.scalar_data.base import (
     DataType,
     Answer,
     Question,
-    CacheDocument,
+    CacheDocument, CacheMetadata,
 )
 from gptcache.manager.vector_data.base import VectorBase, VectorData
 from gptcache.utils.error import CacheError, ParamError
@@ -369,6 +369,8 @@ class SSDataManager(DataManager):
         for ans in cache_data.answers:
             if ans.answer_type != DataType.STR:
                 ans.answer = self.o.get(ans.answer)
+        cache_data.metadata = [CacheMetadata(name=m[0], value=m[1]) for m in res_data[2].items()]
+        cache_data.cache_id = res_data[1]
         return cache_data
 
     def hit_cache_callback(self, res_data, **kwargs):
