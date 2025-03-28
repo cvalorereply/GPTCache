@@ -66,10 +66,10 @@ def _update_cache_callback(
     llm_data, update_cache_func, *args, **kwargs
 ):  # pylint: disable=W0613
     """Save the `llm_data` to cache storage"""
-    update_cache_func(llm_data)
+    return update_cache_func(llm_data)
 
 
-def put(prompt: str, data: Any, **kwargs) -> None:
+def put(prompt: str, data: Any, **kwargs) -> Any:
     """put api, put qa pair information to GPTCache
     Please make sure that the `pre_embedding_func` param is `get_prompt` when initializing the cache
 
@@ -98,7 +98,7 @@ def put(prompt: str, data: Any, **kwargs) -> None:
                 return CacheDocument(content=data["content"], metadata=[])
         return data
 
-    adapt(
+    res = adapt(
         llm_handle,
         _cache_data_converter,
         _update_cache_callback,
@@ -106,6 +106,7 @@ def put(prompt: str, data: Any, **kwargs) -> None:
         prompt=prompt,
         **kwargs,
     )
+    return res
 
 
 def get(question: Union[str, dict], **kwargs) -> Any:

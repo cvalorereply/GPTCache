@@ -273,7 +273,7 @@ class SSDataManager(DataManager):
         """
         session = kwargs.get("session", None)
         session_id = session.name if session else None
-        self.import_data([question], [answer], [embedding_data], [session_id])
+        return self.import_data([question], [answer], [embedding_data], [session_id])
 
     def _process_answer_data(self, answers: Union[Answer, List[Answer]]):
         if isinstance(answers, Answer):
@@ -344,6 +344,7 @@ class SSDataManager(DataManager):
             ]
         )
         self.eviction_base.put(ids)
+        return list(zip(ids, cache_datas))
 
     def get_scalar_data(self, res_data, **kwargs) -> Optional[CacheData]:
         session = kwargs.get("session", None)

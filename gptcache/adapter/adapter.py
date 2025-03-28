@@ -264,7 +264,7 @@ def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwarg
                     question = pre_store_data
                 else:
                     question.content = pre_store_data
-                time_cal(
+                result = time_cal(
                     chat_cache.data_manager.save,
                     func_name="save",
                     report_func=chat_cache.report.save,
@@ -281,6 +281,7 @@ def adapt(llm_handler, cache_data_convert, update_cache_callback, *args, **kwarg
                     == 0
                 ):
                     chat_cache.flush()
+                return [{"content": r[1].answers[0].answer, "metadata": r[1].metadata, "cache_id": r[0]} for r in result]
 
             llm_data = update_cache_callback(
                 llm_data, update_cache_func, *args, **kwargs
